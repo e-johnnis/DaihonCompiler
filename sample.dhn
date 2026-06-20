@@ -1,0 +1,12 @@
+.foo:   #000000
+.bar:   #0055AA
+
+---
+
+.foo:   This is the first line.
+
+.bar:   This is the second line.
+        An LF will be replaced by a space.
+
+.foo:   This is the third line.
+        <b>HTML tags</b> are available.
