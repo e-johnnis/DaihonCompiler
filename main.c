@@ -4,6 +4,7 @@
 #include<unistd.h>
 
 int strbegin(const char*, const char*);
+void changeext(char*, const char*, const char*);
 
 char dhnFile[128] = { '\0' };
 char htmlFile[128] = { '\0' };
@@ -48,7 +49,7 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    if(!strlen(htmlFile)) strcpy(htmlFile, "a.html");
+    if(!strlen(htmlFile)) changeext(htmlFile, dhnFile, ".html");
 
     #ifdef DEBUG
     printf("input file  : %s\n", dhnFile);
@@ -143,4 +144,11 @@ int strbegin(const char* str, const char* word) {
         else if(str[i] != word[i]) return 0;
     }
     return (word[i] == '\0');
+}
+
+void changeext(char* dst, const char* src, const char* ext) {
+    char fsn[128];
+
+    sscanf(src, "%[^.]", fsn);
+    sprintf(dst, "%s%s", fsn, ext);
 }

@@ -36,7 +36,7 @@ Daihon format will enable you to write _daihon_ more easily and more quickly.
 
 ### Useage
 
-- Compile Daihon formatted text into html (a.html)
+- Compile Daihon formatted text into html (``sample.html`` will be exported)
 
     ``` bash
     dhnc sample.dhn
