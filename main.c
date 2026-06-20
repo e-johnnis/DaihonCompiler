@@ -36,6 +36,7 @@ int main(int argc, char** argv) {
 
             case 'f':
                 strcpy(font, optarg);
+                break;
             
             default:
                 fprintf(stderr, "[!] invalid option '%c'.\n", optopt);
@@ -43,7 +44,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    if(optind <= argc) strcpy(dhnFile, argv[optind]);
+    if(optind < argc) strcpy(dhnFile, argv[optind]);
     else {
         fprintf(stderr, "[!] no input file.\n");
         return -1;
