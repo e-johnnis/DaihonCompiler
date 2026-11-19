@@ -9,7 +9,8 @@ void changeext(char*, const char*, const char*);
 char dhnFile[128] = { '\0' };
 char htmlFile[128] = { '\0' };
 char lang[8] = { '\0' };
-char title[64] = { '\0' };
+char title[128] = { '\0' };
+char author[128] = { '\0' };
 char font[128] = { '\0' };
 char line[1024] = { '\0' };
 char cv[16] = { '\0' };
@@ -20,7 +21,7 @@ int main(int argc, char** argv) {
     int header = 1;
     int pb = 0;
 
-    while((cc = getopt(argc, argv, "o:r:t:f:")) != -1) {
+    while((cc = getopt(argc, argv, "o:r:f:")) != -1) {
         switch(cc) {
             case 'o':
                 strcpy(htmlFile, optarg);
@@ -28,10 +29,6 @@ int main(int argc, char** argv) {
             
             case 'r':
                 strcpy(lang, optarg);
-                break;
-
-            case 't':
-                strcpy(title, optarg);
                 break;
 
             case 'f':
@@ -50,17 +47,8 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    if(!strlen(htmlFile)) changeext(htmlFile, dhnFile, ".html");
+    FILE* html = (strlen(htmlFile) ? fopen(htmlFile, "w") : stdout);
 
-    #ifdef DEBUG
-    printf("input file  : %s\n", dhnFile);
-    printf("output file : %s\n", htmlFile);
-    printf("html lang   : %s\n", lang);
-    printf("html title  : %s\n", title);
-    printf("font-family : %s\n", font);
-    #endif
-
-    FILE* html = fopen(htmlFile, "w");
     if(!html) {
         fprintf(stderr, "[!] failed to open \"%s\".\n", htmlFile);
         return -2;
@@ -78,39 +66,44 @@ int main(int argc, char** argv) {
     else fprintf(html, "<html>\n");
     fprintf(html, "<head>\n");
     fprintf(html, "  <meta charset=\"UTF-8\" />\n");
-    if(strlen(title)) fprintf(html, "  <title>%s</title>\n", title);
     fprintf(html, "  <style>\n");
     if(strlen(font)) {
         fprintf(html, "    body {\n");
-        fprintf(html, "      font-family: %s;\n", font);
+        fprintf(html, "      font-family: '%s';\n", font);
         fprintf(html, "    }\n");
     }
     fprintf(html, "    p {\n");
     fprintf(html, "      break-inside: avoid;\n");
     fprintf(html, "    }\n");
+    fprintf(html, "    .centeraligned {\n");
+    fprintf(html, "      text-align: center;\n");
+    fprintf(html, "    }\n");
 
     while(!feof(dhn)) {
         fscanf(dhn, "%[^\n]\n", line);
-
-        #ifdef DEBUG
-        printf("%s\n", line);
-        #endif
 
         if(header) {
             if(strbegin(line, "---")) {
                 header = 0;
                 fprintf(html, "  </style>\n");
+                if(strlen(title)) fprintf(html, "  <title>%s</title>\n", title);
                 fprintf(html, "</head>\n");
                 fprintf(html, "<body>\n");
-            }else if((sscanf(line, "%[^:]:%*[ ]%[^\n]", cv, words) < 2) || cv[0] != '.') {
+                if(strlen(title)) fprintf(html, "  <h1 class=\"centeraligned\">%s</h1>\n", title);
+                if(strlen(author)) fprintf(html, "  <p class=\"centeraligned\">%s</h1>\n", author);
+            }else if((sscanf(line, "%[^:]:%*[ ]%[^\n]", cv, words) < 2)) {
                 fprintf(stderr, "[!] invalid format: %s\n", line);
                 fclose(dhn);
                 fclose(html);
                 return -3;
-            }else {
+            }else if(cv[0] == '.') {
                 fprintf(html, "    %s {\n", cv);
                 fprintf(html, "      color: %s;\n", words);
                 fprintf(html, "    }\n");
+            }else if(strbegin(cv, "title")) {
+                strcpy(title, words);
+            }else if(strbegin(cv, "author")) {
+                strcpy(author, words);
             }
         }else if(line[0] == '.') {
             if(sscanf(line, "%*[.]%[^:]:%*[ ]%[^\n]", cv, words) < 2) {

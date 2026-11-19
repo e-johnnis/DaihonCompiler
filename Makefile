@@ -1,18 +1,18 @@
 CC:=gcc
+INSTALL_DIR:=/usr/local/bin
 
-OUTPUTFILE=DaihonCompiler
+BUILDFILE=dhnc
 
 .PHONY: build debug install
 
 build:
 	mkdir -p build
-	$(CC) -o build/DaihonCompiler main.c
+	$(CC) -o build/$(BUILDFILE) main.c
 
 debug:
 	mkdir -p debug
 	$(CC) -g -DDEBUG -o debug/dhnc-debug main.c
-	debug/dhnc-debug -o debug/debug-result.html -f TakaoGothic -r en-US -t "dhnc debug" sample.dhn
+	debug/dhnc-debug -f TakaoGothic -r en-US sample.dhn | tee debug/debug-result.html
 
-install: build/DaihonCompiler
-	mkdir -p ${HOME}/.local/bin
-	cp -u build/DaihonCompiler ${HOME}/.local/bin/.
+install: build/$(BUILDFILE)
+	cp -u build/$(BUILDFILE) $(INSTALL_DIR)/.
