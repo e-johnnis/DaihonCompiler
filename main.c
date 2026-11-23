@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
                 fprintf(html, "</head>\n");
                 fprintf(html, "<body>\n");
                 if(strlen(title)) fprintf(html, "  <h1 class=\"centeraligned\">%s</h1>\n", title);
-                if(strlen(author)) fprintf(html, "  <p class=\"centeraligned\">%s</h1>\n", author);
+                if(strlen(author)) fprintf(html, "  <p class=\"centeraligned\">%s</p>\n", author);
             }else if((sscanf(line, "%[^:]:%*[ ]%[^\n]", cv, words) < 2)) {
                 fprintf(stderr, "[!] invalid format: %s\n", line);
                 fclose(dhn);
